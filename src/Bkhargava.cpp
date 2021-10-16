@@ -8,26 +8,42 @@
 #include <iterator>
 #include <set>
 #include <sstream>
+#include <iterator>
 using namespace std;
 
 #define PRINT(x) {\
 	PrintVector(x,#x);\
 }
-template <typename T>
-void PrintVector(const vector<T>& vec,const string& name_of_vector){
+template<typename T>
+void PrintVector(const vector<T> &vec, const string &name_of_vector) {
 	cout << name_of_vector << "  =  {";
-	for (size_t i = 0; i < vec.size();++i){
-		cout << vec[i] << " ," ;
+	for (size_t i = 0; i < vec.size(); ++i) {
+		cout << vec[i] << " ,";
 	}
 	cout << "}" << endl;
 }
-template <typename K, typename V>
-ostream& operator << (ostream& out,pair<K,V> p){
+template<typename K, typename V>
+ostream& operator <<(ostream &out, pair<K, V> p) {
 	out << "{" << p.first << "," << p.second << "}";
 	return out;
 }
+template<typename S>
+ostream& operator<<(ostream &out, set<S> s) {
+	out << "{";
+	bool first = true;
+	for (auto item : s) {
+		if (first) {
+			out << item;
+			first = false;
+		} else {
+			out << ", " << item;
+		}
+	}
+	out << "}";
+	return out;
+}
 int BinarySearch(vector<int> &v, const int &x) {
-	sort(begin(v),end(v));
+	sort(begin(v), end(v));
 	int low = 0, mid = 0;
 	int high = static_cast<int>(v.size() - 1);
 
@@ -62,14 +78,14 @@ vector<int> SelectionSort(vector<int> &v) {
 	return NewArr;
 }
 
-vector<int> QuickSort(vector<int> v){
-	if (v.size() < 2){
+vector<int> QuickSort(vector<int> v) {
+	if (v.size() < 2) {
 		return v;
 	} else {
 		int first = v[0];
 		v.erase(begin(v));
-		vector<int> less,more,all;
-		for (size_t i = 0; i < v.size();++i){
+		vector<int> less, more, all;
+		for (size_t i = 0; i < v.size(); ++i) {
 			if (v[i] > first) {
 				more.push_back(v[i]);
 			} else {
@@ -78,37 +94,37 @@ vector<int> QuickSort(vector<int> v){
 		}
 		less = QuickSort(less);
 		more = QuickSort(more);
-		all.insert(begin(all),begin(less),end(less));
-		all.insert(end(all),first);
-		all.insert(end(all),begin(more),end(more));
+		all.insert(begin(all), begin(less), end(less));
+		all.insert(end(all), first);
+		all.insert(end(all), begin(more), end(more));
 		return all;
 
 	}
 }
-bool CheckGraph (const string& s){
-	if (s.back() == '5'){
+bool CheckGraph(const string &s) {
+	if (s.back() == '5') {
 		return true;
 	} else {
 		return false;
 	}
 }
-string GraphSearch(map<string,vector<string>> graph){
+string GraphSearch(map<string, vector<string>> graph) {
 	deque<string> deq;
 	set<string> checked;
 	deq.push_back("1");
-	while(!deq.empty()){
+	while (!deq.empty()) {
 		string current = deq.front();
 		string next = graph[current].front();
-		for (auto i : graph[current]){
+		for (auto i : graph[current]) {
 			deq.push_back(i);
 
 		}
-		if ((CheckGraph(next)) && (checked.find(next) == end(checked))){
+		if ((CheckGraph(next)) && (checked.find(next) == end(checked))) {
 			return next;
-		}else{
+		} else {
 			checked.insert(next);
-			if (!graph[current].empty()){
-			graph[current].erase(begin(graph[current]));
+			if (!graph[current].empty()) {
+				graph[current].erase(begin(graph[current]));
 			}
 			deq.pop_front();
 		}
@@ -116,47 +132,67 @@ string GraphSearch(map<string,vector<string>> graph){
 	return "Was never found";
 
 }
-pair<string,int> FindLowestCostNode(map<string,int> &costs,const set<string> & checked){
+pair<string, int> FindLowestCostNode(map<string, int> &costs,
+		const set<string> &checked) {
 	int lowest_cost = 5000000;
-	pair<string,int> lowest_cost_node = {"0",0};
-	for (auto i : costs){
+	pair<string, int> lowest_cost_node = { "0", 0 };
+	for (auto i : costs) {
 		int cost = i.second;
-		if ((cost < lowest_cost)&&(find(begin(checked),end(checked),i.first)==end(checked))){
+		if ((cost < lowest_cost)
+				&& (find(begin(checked), end(checked), i.first) == end(checked))) {
 			lowest_cost = cost;
 			lowest_cost_node = i;
 		}
 	}
 	return lowest_cost_node;
 }
-int DextraAlg(const map<string,vector<pair<string,int>>> &v){
+int DextraAlg(const map<string, vector<pair<string, int>>> &v) {
 	set<string> checked;
 
-	map<string,int> costs = {{"B",6},
-	{"C",2},
-	{"E",500000}};
-	map<string,string> parents = {{"B","A"},
-	{"C","A"},
-	{"E",""}};
-	pair<string,int> node = FindLowestCostNode(costs,checked);
-	//cout << node.first;
-	pair<string,int> empty_node = {"0",0};
-	while(node != empty_node){
+	map<string, int> costs = { { "B", 6 }, { "C", 2 }, { "E", 500000 } };
+	map<string, string> parents = { { "B", "A" }, { "C", "A" }, { "E", "" } };
+	pair<string, int> node = FindLowestCostNode(costs, checked);
+	pair<string, int> empty_node = { "0", 0 };
+	while (node != empty_node) {
 		int cost = costs[node.first];
-		cout << node.first <<endl;
-		vector<pair<string,int>> neighbours = v.at(node.first);
-		//PRINT(neighbours);
-		for(auto n : neighbours){
+		vector<pair<string, int>> neighbours = v.at(node.first);
+		for (auto n : neighbours) {
 			int new_cost = cost + n.second;
-			if (costs[n.first] > new_cost){
+			if (costs[n.first] > new_cost) {
 				costs[n.first] = new_cost;
 				parents[n.first] = node.first;
 			}
 		}
 		checked.insert(node.first);
-		node = FindLowestCostNode(costs,checked);
+		node = FindLowestCostNode(costs, checked);
 	}
 	int path = costs["E"];
 	return path;
+}
+set<string> GreedAlg(set<string> states,
+		const map<string, set<string>> &stations) {
+	set<string> final_stations;
+	while (!states.empty()) {
+		string best_station;
+		set<string> states_covered;
+		vector<string> s_diff;
+		for (auto i : stations) {
+			vector<string> s_intersec;
+			set_intersection(begin(states), end(states), begin(i.second),
+					end(i.second), back_inserter(s_intersec));
+			set<string> covered(begin(s_intersec), end(s_intersec));
+			if (covered.size() > states_covered.size()) {
+				best_station = i.first;
+				states_covered = covered;
+			}
+		}
+		set_difference(begin(states), end(states), begin(states_covered),
+				end(states_covered), back_inserter(s_diff));
+		set<string> difference(begin(s_diff), end(s_diff));
+		states = difference;
+		final_stations.insert(best_station);
+	}
+	return final_stations;
 }
 int main() {
 	//test for Binary search
@@ -186,7 +222,7 @@ int main() {
 		vector<int> q_nums = {9,8,7,6,5,4,3,2,1};
 		vector<int>q_sorted = QuickSort(q_nums);
 		for (size_t i = 0; i < q_sorted.size();i++){
-			cout << q_sorted[i] << endl;
+			cout <<"Printing q_sorted: "<< q_sorted[i] << endl;
 		}
 	//test for GraphSearch
 	map<string,vector<string>> graph = {{"1",{"21","22"}},
@@ -196,13 +232,22 @@ int main() {
 										{"32",{"22"}},
 										{"33",{"41","43"}},
 										{"42",{"55"}}};
-	cout << GraphSearch(graph) << endl;
+	cout <<"Searching graph: " <<GraphSearch(graph) << endl;
 
 	//test for Dextera algorithm
 	map<string,vector<pair<string,int>>> w_graph = {{"A",{{"B",6},{"C",2}}},
 			{"B",{{"E",1}}},
 			{"C",{{"E",5},{"B",3}}},
 			{"E",{{"0",0}}}};
-	cout << DextraAlg(w_graph) << endl;
+	cout << "Dextra algorithm finds that nearest path is: "<<DextraAlg(w_graph) << endl;
+
+	//test for greed algorithm
+	set<string> states = {"mt","wa","or","id","nv","ut","ca","az"};
+	map<string,set<string>> stations = {{"kone",{"id","nv","ut"}},
+										{"ktwo",{"wa","id","mt"}},
+										{"kthree",{"or","nv","ca"}},
+										{"kfour",{"nv","ut"}},
+										{"kfive",{"ca","az"}}};
+	cout << "Greed algorithm finds the best soution: " <<  GreedAlg(states,stations)<< endl;
 	return 0;
 }
